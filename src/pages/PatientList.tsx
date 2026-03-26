@@ -98,7 +98,7 @@ export function PatientList() {
           placeholder="Search patients by name or district..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-white border border-[#5A5A40]/10 rounded-2xl py-4 pl-12 pr-6 focus:outline-none focus:ring-2 focus:ring-[#5A5A40]/20 transition-all font-serif"
+          className="w-full bg-white border border-[#5A5A40]/10 rounded-2xl py-4 pl-12 pr-6 focus:outline-none focus:ring-2 focus:ring-[#5A5A40]/20 transition-all font-sans"
         />
       </div>
 
@@ -169,34 +169,34 @@ export function PatientList() {
               <h3 className="text-2xl font-bold text-[#1a1a1a] mb-6">New Patient</h3>
               <form onSubmit={handleAddPatient} className="space-y-4">
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60 block mb-1">Full Name</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40]/60 block mb-1">Full Name</label>
                   <input
                     required
                     type="text"
                     value={newPatient.name}
                     onChange={(e) => setNewPatient({ ...newPatient, name: e.target.value })}
-                    className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 focus:ring-2 focus:ring-[#5A5A40]/20 font-serif"
+                    className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 focus:ring-2 focus:ring-[#5A5A40]/20 font-sans"
                     placeholder="Enter name..."
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60 block mb-1">Age</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40]/60 block mb-1">Age</label>
                     <input
                       required
                       type="number"
                       value={newPatient.age}
                       onChange={(e) => setNewPatient({ ...newPatient, age: e.target.value })}
-                      className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 focus:ring-2 focus:ring-[#5A5A40]/20 font-serif"
+                      className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 focus:ring-2 focus:ring-[#5A5A40]/20 font-sans"
                       placeholder="Years..."
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60 block mb-1">Gender</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40]/60 block mb-1">Gender</label>
                     <select
                       value={newPatient.gender}
                       onChange={(e) => setNewPatient({ ...newPatient, gender: e.target.value as any })}
-                      className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 focus:ring-2 focus:ring-[#5A5A40]/20 font-serif appearance-none"
+                      className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 focus:ring-2 focus:ring-[#5A5A40]/20 font-sans appearance-none"
                     >
                       <option value="male">Male</option>
                       <option value="female">Female</option>
@@ -205,24 +205,24 @@ export function PatientList() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60 block mb-1">Place of Residence</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40]/60 block mb-1">Place of Residence</label>
                   <input
                     required
                     type="text"
                     value={newPatient.residence}
                     onChange={(e) => setNewPatient({ ...newPatient, residence: e.target.value })}
-                    className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 focus:ring-2 focus:ring-[#5A5A40]/20 font-serif"
+                    className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 focus:ring-2 focus:ring-[#5A5A40]/20 font-sans"
                     placeholder="e.g. Village, Street..."
                   />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60 block">Current Location (District)</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40]/60 block">Current Location (District)</label>
                     <button
                       type="button"
                       onClick={getCurrentLocation}
                       disabled={locating}
-                      className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] flex items-center gap-1 hover:underline"
+                      className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] flex items-center gap-1 hover:underline"
                     >
                       {locating ? <Loader2 className="w-3 h-3 animate-spin" /> : <MapPin className="w-3 h-3" />}
                       Use GPS
@@ -233,7 +233,7 @@ export function PatientList() {
                     type="text"
                     value={newPatient.district}
                     onChange={(e) => setNewPatient({ ...newPatient, district: e.target.value })}
-                    className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 focus:ring-2 focus:ring-[#5A5A40]/20 font-serif"
+                    className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 focus:ring-2 focus:ring-[#5A5A40]/20 font-sans"
                     placeholder="e.g. Kisumu East..."
                   />
                 </div>

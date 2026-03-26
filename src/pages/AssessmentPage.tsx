@@ -226,7 +226,7 @@ export function AssessmentPage() {
                 placeholder="Search patients..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-white border border-[#5A5A40]/10 rounded-2xl py-4 pl-12 pr-6 focus:outline-none focus:ring-2 focus:ring-[#5A5A40]/20 transition-all font-serif"
+                className="w-full bg-white border border-[#5A5A40]/10 rounded-2xl py-4 pl-12 pr-6 focus:outline-none focus:ring-2 focus:ring-[#5A5A40]/20 transition-all font-sans"
               />
             </div>
 
@@ -364,12 +364,12 @@ export function AssessmentPage() {
                     </button>
                   ))}
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60 block mb-1">Breathing Rate (breaths/min)</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40]/60 block mb-1">Breathing Rate (breaths/min)</label>
                     <input
                       type="number"
                       value={symptoms.breathingRate}
                       onChange={(e) => setSymptoms({ ...symptoms, breathingRate: e.target.value })}
-                      className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 font-serif"
+                      className="w-full bg-[#F5F5F0] border-none rounded-2xl p-4 font-sans"
                       placeholder="e.g. 45"
                     />
                   </div>
@@ -462,27 +462,27 @@ export function AssessmentPage() {
 
               <div className="p-6 bg-[#F5F5F0] rounded-2xl text-left space-y-4">
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60">Verdict</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40]/60">Verdict</label>
                   <p className="text-2xl font-bold text-[#1a1a1a]">
                     {result.verdict || (type === 'malaria_rdt' ? result.result : (type === 'muac' ? result.status : result.prediction))}
                   </p>
                 </div>
                 {result.analysis && (
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60">Analysis</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40]/60">Analysis</label>
                     <p className="text-sm text-[#1a1a1a] leading-relaxed">{result.analysis || result.explanation}</p>
                   </div>
                 )}
                 {result.confidence && (
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60">Confidence</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40]/60">Confidence</label>
                     <div className="w-full bg-white rounded-full h-2 mt-1">
                       <div className="bg-[#5A5A40] h-full rounded-full" style={{ width: `${result.confidence * 100}%` }} />
                     </div>
                   </div>
                 )}
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60">Recommendation</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40]/60">Recommendation</label>
                   <p className="text-sm text-[#1a1a1a] leading-relaxed font-bold">{result.recommendation}</p>
                 </div>
               </div>

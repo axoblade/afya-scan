@@ -99,7 +99,7 @@ export function Dashboard() {
               <stat.icon className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs uppercase tracking-widest font-bold text-[#5A5A40]/40">{stat.label}</p>
+              <p className="text-xs uppercase tracking-widest font-bold text-[#5A5A40]/60">{stat.label}</p>
               <p className="text-2xl font-bold text-[#1a1a1a]">{stat.value}</p>
             </div>
           </motion.div>

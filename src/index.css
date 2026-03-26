@@ -4,15 +4,39 @@
 @theme {
   --font-serif: "Cormorant Garamond", serif;
   --font-sans: "Inter", sans-serif;
+  
+  /* Accessibility-focused theme overrides */
+  --text-xs: 0.875rem; /* 14px instead of 12px */
+  --text-sm: 1rem;    /* 16px instead of 14px */
+  --text-base: 1.125rem; /* 18px instead of 16px */
+  --text-lg: 1.25rem;  /* 20px instead of 18px */
+  --text-xl: 1.5rem;   /* 24px instead of 20px */
+  --text-2xl: 1.875rem; /* 30px instead of 24px */
+  --text-3xl: 2.25rem;  /* 36px instead of 30px */
 }
 
 body {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   background-color: #F5F5F0;
   color: #1a1a1a;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.font-sans {
-  font-family: var(--font-sans);
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+/* Improve focus states for accessibility */
+:focus-visible {
+  outline: 3px solid #5A5A40;
+  outline-offset: 2px;
+}
+
+/* Ensure buttons have a minimum touch target size */
+button, a {
+  min-height: 44px;
+  min-width: 44px;
 }
 
