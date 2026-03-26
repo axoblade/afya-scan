@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "Patient": {
+      "title": "Patient",
+      "description": "Patient information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "age": { "type": "number" },
+        "gender": { "type": "string", "enum": ["male", "female", "other"] },
+        "district": { "type": "string" },
+        "residence": { "type": "string" },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "age", "district", "residence"]
+    },
+    "Assessment": {
+      "title": "Assessment",
+      "description": "Health assessment record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "patientId": { "type": "string" },
+        "chvId": { "type": "string" },
+        "type": { "type": "string", "enum": ["malaria_rdt", "muac", "symptom_triage"] },
+        "result": { "type": "string" },
+        "confidence": { "type": "number" },
+        "symptoms": { "type": "object" },
+        "recommendation": { "type": "string" },
+        "district": { "type": "string" },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["patientId", "type", "result", "district"]
+    },
+    "Alert": {
+      "title": "Alert",
+      "description": "Outbreak alert",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "district": { "type": "string" },
+        "type": { "type": "string" },
+        "message": { "type": "string" },
+        "count": { "type": "number" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["active", "resolved"] }
+      },
+      "required": ["district", "type", "message", "count"]
+    }
+  },
+  "firestore": {
+    "patients": {
+      "schema": "Patient",
+      "description": "Collection of patients"
+    },
+    "assessments": {
+      "schema": "Assessment",
+      "description": "Collection of health assessments"
+    },
+    "alerts": {
+      "schema": "Alert",
+      "description": "Collection of outbreak alerts"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "AfyaScan",
+  "description": "AI-enabled health tool for Community Health Volunteers in rural East Africa to detect malaria, malnutrition, and pneumonia.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
