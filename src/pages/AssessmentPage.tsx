@@ -19,6 +19,7 @@ export function AssessmentPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [image, setImage] = useState<string | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
   const [symptoms, setSymptoms] = useState({ fever: false, cough: false, breathingRate: '', lethargy: false });
   
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -101,6 +102,11 @@ export function AssessmentPage() {
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setFileError("File size exceeds 2MB limit.");
+        return;
+      }
+      setFileError(null);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result as string);
@@ -197,6 +203,7 @@ export function AssessmentPage() {
     setType(null);
     setImage(null);
     setResult(null);
+    setFileError(null);
     setSymptoms({ fever: false, cough: false, breathingRate: '', lethargy: false });
   };
 
@@ -411,10 +418,15 @@ export function AssessmentPage() {
                       />
                       <label
                         htmlFor="image-upload"
-                        className="w-full bg-white border-2 border-dashed border-[#5A5A40]/20 p-8 rounded-[32px] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#5A5A40]/40 transition-all"
+                        className={cn(
+                          "w-full bg-white border-2 border-dashed p-8 rounded-[32px] flex flex-col items-center justify-center gap-2 cursor-pointer transition-all",
+                          fileError ? "border-red-500 bg-red-50" : "border-[#5A5A40]/20 hover:border-[#5A5A40]/40"
+                        )}
                       >
-                        <Upload className="w-8 h-8 text-[#5A5A40]/40" />
-                        <span className="text-sm font-bold text-[#5A5A40]/60 uppercase tracking-widest">Or Upload Existing Image</span>
+                        <Upload className={cn("w-8 h-8", fileError ? "text-red-500" : "text-[#5A5A40]/40")} />
+                        <span className={cn("text-sm font-bold uppercase tracking-widest", fileError ? "text-red-500" : "text-[#5A5A40]/60")}>
+                          {fileError || "Or Upload Existing Image"}
+                        </span>
                       </label>
                     </div>
                   </div>
@@ -459,6 +471,12 @@ export function AssessmentPage() {
                 <h2 className="text-3xl font-bold text-[#1a1a1a]">Assessment Complete</h2>
                 <p className="text-[#5A5A40]/60 italic">AI Analysis Result</p>
               </div>
+
+              {image && (
+                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-md">
+                  <img src={image} alt="Assessment Resource" className="w-full h-full object-cover" />
+                </div>
+              )}
 
               <div className="p-6 bg-[#F5F5F0] rounded-2xl text-left space-y-4">
                 <div>
