@@ -4,15 +4,6 @@
 @theme {
   --font-serif: "Cormorant Garamond", serif;
   --font-sans: "Inter", sans-serif;
-  
-  /* Accessibility-focused theme overrides */
-  --text-xs: 0.875rem; /* 14px instead of 12px */
-  --text-sm: 1rem;    /* 16px instead of 14px */
-  --text-base: 1.125rem; /* 18px instead of 16px */
-  --text-lg: 1.25rem;  /* 20px instead of 18px */
-  --text-xl: 1.5rem;   /* 24px instead of 20px */
-  --text-2xl: 1.875rem; /* 30px instead of 24px */
-  --text-3xl: 2.25rem;  /* 36px instead of 30px */
 }
 
 body {
