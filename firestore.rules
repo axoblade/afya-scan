@@ -39,9 +39,10 @@ service cloud.firestore {
 
     function isValidAssessment(data) {
       return data.patientId is string &&
-             data.type in ['malaria_rdt', 'muac', 'symptom_triage'] &&
+             data.type in ['rdt', 'muac', 'symptom_triage'] &&
              data.result is string &&
-             data.district is string;
+             data.district is string &&
+             (data.type != 'rdt' || data.rdtType is string);
     }
 
     // Rules

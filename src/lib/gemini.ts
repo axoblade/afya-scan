@@ -20,20 +20,22 @@ export interface MUACResult {
 }
 
 export interface TriageResult {
-  prediction: 'malaria' | 'pneumonia' | 'malnutrition' | 'other';
+  transcription: string;
+  prediction: string;
   verdict: string;
   recommendation: string;
   urgency: 'high' | 'medium' | 'low';
   analysis: string;
 }
 
-export async function analyzeMalariaRDT(base64Image: string): Promise<RDTResult> {
+export async function analyzeRDT(testType: string, base64Image: string, clinicalContext?: any): Promise<RDTResult> {
+  const contextText = clinicalContext ? `Clinical Context: ${JSON.stringify(clinicalContext)}.` : "";
   const model = genAI.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: [
       {
         parts: [
-          { text: "Analyze this Malaria Rapid Diagnostic Test (RDT) strip. Determine if it's positive, negative, or invalid. Provide a confidence score (0-1), a clear verdict (e.g., 'Malaria Detected'), a brief explanation, and a recommendation. Return JSON format." },
+          { text: `Analyze this ${testType} strip. Determine if it's positive, negative, or invalid. ${contextText} Use the clinical context (if provided) to verify if it aligns with the RDT result. Provide a confidence score (0-1), a clear verdict, a brief explanation, and a recommendation. Return JSON format.` },
           { inlineData: { mimeType: "image/jpeg", data: base64Image } }
         ]
       }
@@ -89,42 +91,36 @@ export async function estimateMUAC(base64Image: string): Promise<MUACResult> {
   return JSON.parse(response.text || '{}');
 }
 
-export async function performSymptomTriage(symptoms: any): Promise<TriageResult> {
+export async function performSymptomTriage(audioBase64: string): Promise<TriageResult> {
   const model = genAI.models.generateContent({
     model: "gemini-3-flash-preview",
-    contents: `Perform a medical triage based on these symptoms: ${JSON.stringify(symptoms)}. 
-    Predict the most likely condition (malaria, pneumonia, malnutrition, or other), provide a clear verdict, a detailed analysis of the symptoms, a treatment recommendation, and an urgency level. 
-    Return JSON format.`,
+    contents: [
+      {
+        parts: [
+          { text: "This is a recording of a patient in Uganda explaining their symptoms (possibly in Swahili, Luganda, Runyankore, or Iteso). 1. Transcribe the symptoms accurately into English. 2. Perform a general medical triage/assessment based on the transcribed symptoms. 3. Predict the likely health condition (it can be anything, from common cold to serious illness). 4. Provide a clear verdict, a detailed analysis, a professional recommendation (e.g., first aid, or immediate visit to a doctor), and an urgency level. Return JSON format." },
+          { inlineData: { mimeType: "audio/webm", data: audioBase64 } }
+        ]
+      }
+    ],
     config: {
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          prediction: { type: Type.STRING, enum: ["malaria", "pneumonia", "malnutrition", "other"] },
+          transcription: { type: Type.STRING },
+          prediction: { type: Type.STRING },
           verdict: { type: Type.STRING },
           recommendation: { type: Type.STRING },
           urgency: { type: Type.STRING, enum: ["high", "medium", "low"] },
           analysis: { type: Type.STRING }
         },
-        required: ["prediction", "verdict", "recommendation", "urgency", "analysis"]
+        required: ["transcription", "prediction", "verdict", "recommendation", "urgency", "analysis"]
       }
     }
   });
 
   const response = await model;
   return JSON.parse(response.text || '{}');
-}
-
-export async function generateOutbreakAlert(district: string, count: number, type: string): Promise<string> {
-  const model = genAI.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: `Generate a natural language alert message for district health officials. 
-    There have been ${count} positive cases of ${type} in the ${district} district within the last 2 hours. 
-    The message should be urgent but professional, highlighting the need for immediate investigation.`,
-  });
-
-  const response = await model;
-  return response.text || "Urgent alert: Multiple cases detected.";
 }
 
 export async function suggestDistrict(input: string, lat?: number, lng?: number): Promise<string> {

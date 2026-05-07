@@ -1,8 +1,9 @@
 {
   "name": "AfyaScan: AI-Powered Community Health Tool",
-  "description": "A mobile-first health assessment tool for Community Health Volunteers to detect malaria, malnutrition, and pneumonia using AI.",
+  "description": "A mobile-first health assessment tool for Community Health Volunteers to conduct rapid diagnostic tests and AI-powered symptom triage.",
   "requestFramePermissions": [
     "camera",
-    "geolocation"
+    "geolocation",
+    "microphone"
   ]
 }

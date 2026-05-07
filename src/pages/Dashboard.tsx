@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
 import { collection, query, orderBy, limit, onSnapshot, where, getDocs } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { Assessment, Alert, Patient } from '../types';
-import { Activity, AlertTriangle, Users, TrendingUp, Clock, ChevronRight, Shield } from 'lucide-react';
+import { Assessment, Patient } from '../types';
+import { Activity, Users, TrendingUp, Clock, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { formatDate } from '../lib/utils';
+import { formatDate, cn } from '../lib/utils';
 import { AssessmentDetails } from '../components/AssessmentDetails';
 
 export function Dashboard() {
-  const [stats, setStats] = useState({ patients: 0, assessments: 0, alerts: 0 });
+  const [stats, setStats] = useState({ patients: 0, assessments: 0 });
   const [recentAssessments, setRecentAssessments] = useState<Assessment[]>([]);
-  const [activeAlerts, setActiveAlerts] = useState<Alert[]>([]);
   const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
@@ -20,11 +19,9 @@ export function Dashboard() {
       try {
         const pSnap = await getDocs(collection(db, 'patients'));
         const aSnap = await getDocs(collection(db, 'assessments'));
-        const alSnap = await getDocs(query(collection(db, 'alerts'), where('status', '==', 'active')));
         setStats({
           patients: pSnap.size,
-          assessments: aSnap.size,
-          alerts: alSnap.size
+          assessments: aSnap.size
         });
       } catch (err) {
         handleFirestoreError(err, OperationType.GET, 'stats');
@@ -38,15 +35,8 @@ export function Dashboard() {
       setRecentAssessments(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Assessment)));
     }, (err) => handleFirestoreError(err, OperationType.LIST, 'assessments'));
 
-    // Listen for active alerts
-    const qAlerts = query(collection(db, 'alerts'), where('status', '==', 'active'), orderBy('timestamp', 'desc'), limit(3));
-    const unsubscribeAlerts = onSnapshot(qAlerts, (snapshot) => {
-      setActiveAlerts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Alert)));
-    }, (err) => handleFirestoreError(err, OperationType.LIST, 'alerts'));
-
     return () => {
       unsubscribeAssess();
-      unsubscribeAlerts();
     };
   }, []);
 
@@ -65,7 +55,6 @@ export function Dashboard() {
   const statCards = [
     { label: 'Total Patients', value: stats.patients, icon: Users, color: 'bg-blue-50 text-blue-600' },
     { label: 'Assessments', value: stats.assessments, icon: Activity, color: 'bg-green-50 text-green-600' },
-    { label: 'Active Alerts', value: stats.alerts, icon: AlertTriangle, color: 'bg-red-50 text-red-600' },
   ];
 
   return (
@@ -74,120 +63,130 @@ export function Dashboard() {
       animate={{ opacity: 1 }}
       className="space-y-8"
     >
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-[#1a1a1a]">Dashboard</h2>
-          <p className="text-[#5A5A40]/60 italic">Overview of community health status</p>
+          <h2 className="text-4xl font-light text-white tracking-tight">Health Overview</h2>
+          <p className="text-emerald-400/60 italic mt-1">Real-time community health monitoring</p>
         </div>
-        <div className="flex items-center gap-2 text-sm font-bold text-[#5A5A40] bg-[#5A5A40]/10 px-4 py-2 rounded-full">
-          <Clock className="w-4 h-4" />
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+        <div className="flex items-center gap-2 text-xs font-medium text-slate-400 bg-slate-900 border border-slate-800 px-4 py-2 rounded-full shadow-lg shadow-slate-950/20">
+          <Clock className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="uppercase tracking-widest">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="bg-white p-6 rounded-[32px] shadow-sm border border-[#5A5A40]/5 flex items-center gap-4"
+            className="bg-slate-900 p-6 rounded-[32px] shadow-xl shadow-slate-950/20 border border-slate-800 relative overflow-hidden"
           >
-            <div className={`p-4 rounded-2xl ${stat.color}`}>
-              <stat.icon className="w-6 h-6" />
+            <div className={`absolute top-0 right-0 p-8 opacity-5 transform translate-x-4 -translate-y-4`}>
+              <stat.icon className="w-24 h-24 text-white" />
             </div>
-            <div>
-              <p className="text-xs uppercase tracking-widest font-bold text-[#5A5A40]/60">{stat.label}</p>
-              <p className="text-2xl font-bold text-[#1a1a1a]">{stat.value}</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-500 mb-2">{stat.label}</p>
+            <div className="flex items-baseline gap-1">
+              <p className="text-4xl font-medium text-white">{stat.value}</p>
+              <span className="text-[10px] font-bold text-emerald-400 flex items-center">
+                <TrendingUp className="w-3 h-3 mr-0.5" />
+                Active
+              </span>
             </div>
           </motion.div>
         ))}
+        {/* Quick Summary Card */}
+        <div className="lg:col-span-2 bg-gradient-to-br from-emerald-600 to-sky-600 text-white p-6 rounded-[32px] shadow-lg shadow-emerald-600/20 relative overflow-hidden flex flex-col justify-between">
+          <div className="relative z-10">
+            <h4 className="text-lg font-light">Community Status</h4>
+            <p className="text-white/80 text-xs mt-1 font-medium">Status: Stable Network</p>
+          </div>
+          <div className="mt-4 flex items-center gap-2">
+            <div className="flex -space-x-2">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="w-8 h-8 rounded-full border-2 border-emerald-500 bg-white/20 flex items-center justify-center text-[10px] font-bold backdrop-blur-sm">
+                  {String.fromCharCode(64 + n)}
+                </div>
+              ))}
+            </div>
+            <p className="text-[10px] uppercase tracking-widest text-white/70 font-bold">CHVs Active</p>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8">
         {/* Recent Assessments */}
-        <section className="bg-white rounded-[32px] p-8 shadow-sm border border-[#5A5A40]/5">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-[#1a1a1a] flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-[#5A5A40]" />
-              Recent Assessments
-            </h3>
-            <button className="text-sm font-bold text-[#5A5A40] hover:underline flex items-center gap-1">
-              View All <ChevronRight className="w-4 h-4" />
+        <section className="bg-slate-900 rounded-[32px] overflow-hidden shadow-2xl shadow-slate-950/40 border border-slate-800">
+          <div className="p-8 border-b border-slate-800 flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-light text-white">Recent Diagnostics</h3>
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1 font-bold">Latest patient interactions</p>
+            </div>
+            <button className="text-[10px] uppercase tracking-[0.2em] font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 border border-sky-500/20 px-4 py-2 rounded-full transition-all">
+              View Log
             </button>
           </div>
-          <div className="space-y-4">
+          
+          <div className="divide-y divide-slate-800">
             {recentAssessments.length === 0 ? (
-              <p className="text-center py-8 text-[#5A5A40]/40 italic">No assessments yet</p>
+              <div className="p-20 text-center">
+                <p className="text-slate-500 italic text-lg">No assessment history recorded yet.</p>
+              </div>
             ) : (
               recentAssessments.map((a) => (
                 <button
                   key={a.id}
                   onClick={() => handleAssessmentClick(a)}
-                  className="w-full flex items-center justify-between p-4 rounded-2xl bg-[#F5F5F0]/50 border border-[#5A5A40]/5 hover:border-[#5A5A40]/20 transition-all text-left group"
+                  className="w-full flex items-center justify-between p-6 hover:bg-slate-800/80 transition-all text-left group"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#5A5A40]/10 flex items-center justify-center group-hover:bg-white transition-colors">
-                      <Activity className="w-5 h-5 text-[#5A5A40]" />
+                  <div className="flex items-center gap-6">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 border border-slate-700 group-hover:border-sky-500/30 transition-all shadow-lg">
+                      <Activity className={cn("w-6 h-6", 
+                        a.type === 'symptom_triage'
+                          ? (a.urgency === 'high' ? "text-rose-500" : a.urgency === 'medium' ? "text-amber-500" : "text-emerald-400")
+                          : (a.result.toLowerCase().includes('positive') || a.result.toLowerCase() === 'red')
+                            ? "text-rose-500" 
+                            : (a.result.toLowerCase() === 'yellow' ? "text-amber-500" : "text-emerald-400")
+                      )} />
                     </div>
                     <div>
-                      <p className="font-bold text-[#1a1a1a] capitalize">{a.verdict || a.type.replace('_', ' ')}</p>
-                      <p className="text-xs text-[#5A5A40]/60">{formatDate(a.timestamp)}</p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+                          {a.type === 'rdt' ? (a.rdtType ? `${a.rdtType} Test` : 'Rapid Test') : a.type.replace('_', ' ')}
+                        </span>
+                        <div className={cn("w-1.5 h-1.5 rounded-full",
+                          a.type === 'symptom_triage'
+                            ? (a.urgency === 'high' ? 'bg-rose-500 animate-pulse' : a.urgency === 'medium' ? 'bg-amber-500' : 'bg-emerald-400')
+                            : (a.result.toLowerCase().includes('positive') || a.result.toLowerCase() === 'red')
+                              ? 'bg-rose-500 animate-pulse' 
+                              : (a.result.toLowerCase() === 'yellow' ? 'bg-amber-500' : 'bg-emerald-400')
+                        )} />
+                      </div>
+                      <p className="text-lg font-medium text-white leading-tight">
+                        {a.verdict || a.result}
+                      </p>
+                      <div className="flex items-center gap-3 mt-1.5">
+                        <span className="text-[10px] font-mono text-slate-500 flex items-center gap-1 font-bold">
+                          <Clock className="w-3 h-3 text-sky-400" />
+                          {formatDate(a.timestamp)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-                      a.result.toLowerCase().includes('positive') || a.result.toLowerCase().includes('red') 
-                        ? 'bg-red-100 text-red-600' 
-                        : 'bg-green-100 text-green-600'
-                    }`}>
-                      {a.result}
-                    </span>
-                    <ChevronRight className="w-4 h-4 text-[#5A5A40]/20 group-hover:text-[#5A5A40] transition-all" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center group-hover:border-sky-500 group-hover:bg-sky-500/10 transition-all">
+                      <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-sky-400 transition-all" />
+                    </div>
                   </div>
                 </button>
               ))
             )}
           </div>
         </section>
-
-        {/* Active Alerts */}
-        <section className="bg-white rounded-[32px] p-8 shadow-sm border border-[#5A5A40]/5">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-[#1a1a1a] flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-red-500" />
-              Outbreak Alerts
-            </h3>
-          </div>
-          <div className="space-y-4">
-            {activeAlerts.length === 0 ? (
-              <div className="text-center py-12 bg-green-50 rounded-2xl border border-green-100">
-                <Shield className="w-12 h-12 text-green-500 mx-auto mb-3" />
-                <p className="text-green-700 font-bold">No active outbreaks</p>
-                <p className="text-green-600/60 text-xs italic">Community health is stable</p>
-              </div>
-            ) : (
-              activeAlerts.map((alert) => (
-                <div key={alert.id} className="p-4 rounded-2xl bg-red-50 border border-red-100 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-red-600 bg-red-100 px-2 py-1 rounded">
-                      {alert.type}
-                    </span>
-                    <span className="text-xs text-red-400">{formatDate(alert.timestamp)}</span>
-                  </div>
-                  <p className="text-sm text-red-900 font-medium">{alert.message}</p>
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-red-400 uppercase tracking-widest">
-                    <Users className="w-3 h-3" />
-                    {alert.count} cases in {alert.district}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </section>
       </div>
+
 
       <AnimatePresence>
         {selectedAssessment && (
