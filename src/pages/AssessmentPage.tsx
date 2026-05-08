@@ -232,25 +232,37 @@ export function AssessmentPage() {
       }
 
       // Save to Firestore
+      const determinedUrgency = aiResult.urgency || (
+        type === 'rdt' 
+          ? (aiResult.result === 'positive' ? 'high' : 'low') 
+          : type === 'muac'
+            ? (aiResult.status === 'Red' ? 'high' : aiResult.status === 'Yellow' ? 'medium' : 'low')
+            : 'low'
+      );
+
       const assessmentData = {
         patientId: selectedPatient.id,
         chvId: auth.currentUser?.uid || 'anonymous',
         type,
-        rdtType,
+        rdtType: rdtType || null,
         result: type === 'rdt' ? aiResult.result : (type === 'muac' ? aiResult.status : aiResult.prediction),
         verdict: aiResult.verdict || '',
         analysis: aiResult.analysis || aiResult.explanation || '',
         transcription: aiResult.transcription || '',
         confidence: aiResult.confidence || 1,
         recommendation: aiResult.recommendation || '',
-        urgency: aiResult.urgency,
+        urgency: determinedUrgency,
         district: selectedPatient.district,
         location,
         timestamp: new Date().toISOString(),
         symptoms: type === 'symptom_triage' ? symptoms : (type === 'rdt' && rdtType === 'Malaria' ? malariaQuiz : null)
       };
 
-      await addDoc(collection(db, 'assessments'), assessmentData);
+      try {
+        await addDoc(collection(db, 'assessments'), assessmentData);
+      } catch (dbErr) {
+        handleFirestoreError(dbErr, OperationType.CREATE, 'assessments');
+      }
     } catch (err) {
       console.error("Error processing assessment:", err);
     } finally {

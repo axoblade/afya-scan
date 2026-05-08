@@ -1,28 +1,32 @@
 # AfyaScan: AI-Powered Community Health Tool
 
-AfyaScan is a mobile-first web application designed for Community Health Volunteers (CHVs) in rural East Africa. It leverages Google's Gemini AI to provide rapid, accurate health assessments for common conditions like Malaria, Malnutrition (MUAC), and Pneumonia (via symptom triage).
+**AfyaScan placed in the top 10 at the hackathon and is officially live.**
 
-## 🌍 Vision
-To empower frontline health workers with advanced diagnostic tools, bridging the gap between rural communities and clinical expertise, and enabling early detection of outbreaks.
+AfyaScan is an AI-powered health tool designed specifically for Community Health Volunteers (CHVs) in rural East Africa. It aims to close the diagnostic gap for treatable diseases by providing advanced tools that work within the critical 24-hour window.
 
-## ✨ Key Features
+## 🌍 The Mission
 
-- **AI-Powered Assessments**:
-  - **Malaria RDT Analysis**: Instant interpretation of Rapid Diagnostic Test strips using computer vision.
-  - **MUAC Estimation**: AI-assisted estimation of Mid-Upper Arm Circumference to detect malnutrition in children.
-  - **Symptom Triage**: Guided triage for pneumonia and other common illnesses based on WHO IMCI guidelines.
-- **Real-Time Outbreak Detection**: Automatically triggers alerts when multiple positive cases are detected in the same district within a short timeframe.
-- **Patient Management**: Securely manage community health records, including patient history and assessment trends.
-- **Offline-Ready**: Built with Firestore persistence to ensure functionality in areas with intermittent connectivity.
-- **Accessibility First**: Designed with large touch targets, high-contrast typography, and a simple, non-technical interface for diverse users.
+This project isn't about building a profitable startup. It was about answering one urgent question: 
+**How can we help a Community Health Volunteer in rural East Africa diagnose a child with malaria, pneumonia, or any general illness within the critical 24-hour window?**
+
+AfyaScan is 100% free for anyone in the developing world to use. Our goal is to close the diagnostic gap for the 1.5 million children who die from preventable and treatable diseases each year.
+
+## ✨ What AfyaScan Does
+
+- **📱 Mobile-First & Offline-Ready**: Designed for the realities of rural clinics with intermittent connectivity through Firestore persistence.
+- **🦟 Instant Malaria RDT Analysis**: Uses Google Gemini AI to interpret rapid diagnostic test (RDT) strips via a phone camera, eliminating human interpretation errors.
+- **📏 AI-Assisted Malnutrition Detection**: Estimates Mid-Upper Arm Circumference (MUAC) and nutritional status through photo analysis to help identify at-risk children faster and more hygienically.
+- **🧠 Symptom Triage for Pneumonia**: Guides volunteers through WHO-based protocols (IMCI) to transcribe, translate, and triage urgency levels.
+- **🚨 Real-Time Outbreak Alerts**: Automatically flags case clusters based on geographic and temporal trends to enable faster responses from health officials.
 
 ## 🛠 Tech Stack
 
+Built on **Google Cloud** for scale and reliability:
+- **AI**: Gemini Pro & Pro Vision (Multimodal analysis, translation, and triage)
+- **Database**: Firebase Firestore (with offline persistence)
+- **Auth**: Firebase Authentication
 - **Frontend**: React 18, TypeScript, Tailwind CSS, Framer Motion
-- **Backend/Database**: Firebase (Authentication, Firestore)
-- **AI Engine**: Google Gemini API (Multimodal analysis for images and text)
-- **Icons**: Lucide React
-- **Date Handling**: date-fns
+- **Architecture**: Secure by design with granular Firestore security rules (ABAC/Zero-Trust).
 
 ## 🚀 Getting Started
 

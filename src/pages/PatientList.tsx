@@ -63,7 +63,7 @@ export function PatientList() {
     try {
       await addDoc(collection(db, 'patients'), {
         ...newPatient,
-        chvId: auth.currentUser?.uid,
+        chvId: auth.currentUser?.uid || 'anonymous',
         age: Number(newPatient.age),
         createdAt: new Date().toISOString()
       });
