@@ -5,6 +5,7 @@ export interface Patient {
   gender: 'male' | 'female' | 'other';
   district: string;
   residence: string;
+  chvId: string;
   location?: {
     lat: number;
     lng: number;

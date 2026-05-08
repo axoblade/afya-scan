@@ -9,10 +9,11 @@
   --color-brand-bg: #020617; /* Slate 950 */
 }
 
+@variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-brand-bg);
-  color: #f8fafc; /* Slate 50 */
+  @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

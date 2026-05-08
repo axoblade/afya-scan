@@ -47,15 +47,16 @@ service cloud.firestore {
 
     // Rules
     match /patients/{patientId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated() && isValidPatient(request.resource.data);
+      allow read: if isAuthenticated() && (resource.data.chvId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidPatient(request.resource.data) && request.resource.data.chvId == request.auth.uid;
+      allow update: if isAuthenticated() && isValidPatient(request.resource.data) && resource.data.chvId == request.auth.uid && request.resource.data.chvId == resource.data.chvId;
       allow delete: if isAdmin();
     }
 
     match /assessments/{assessmentId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && isValidAssessment(request.resource.data);
-      allow update: if isAuthenticated() && isValidAssessment(request.resource.data) && (request.resource.data.chvId == resource.data.chvId || isAdmin());
+      allow read: if isAuthenticated() && (resource.data.chvId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidAssessment(request.resource.data) && request.resource.data.chvId == request.auth.uid;
+      allow update: if isAuthenticated() && isValidAssessment(request.resource.data) && resource.data.chvId == request.auth.uid && request.resource.data.chvId == resource.data.chvId;
       allow delete: if isAdmin();
     }
 
